@@ -39,9 +39,6 @@
 - Client–Server Communication
 
 ---
-
-![Safe Sport Advisor](https://images.unsplash.com/photo-1554284126-aa88f22d8b74)
-
 **Safe Sport Advisor** is a privacy-preserving intelligent advisory system designed to support athletes with **training optimization, injury management, recovery strategies, and health monitoring**—without compromising sensitive personal or medical data.
 
 Unlike conventional AI-powered chat platforms, Safe Sport Advisor enforces a **trusted privacy boundary**, ensuring confidential information is **never exposed to external services**.
