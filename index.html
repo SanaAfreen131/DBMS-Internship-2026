@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Safe Sport Advisor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #f1f5f9;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bg-elements {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .dot {
+      position: absolute;
+      background: rgba(99, 102, 241, 0.2);
+      border-radius: 50%;
+      animation: float 15s infinite ease-in-out;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(180deg); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding: 25px 0;
+    }
+    header h1 {
+      font-size: 2.4rem;
+      background: linear-gradient(to right, #60a5fa, #c084fc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+    header p {
+      color: #cbd5e1;
+      margin-top: 8px;
+      font-size: 1.1rem;
+    }
+
+    .chat-box {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 20px;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .message {
+      display: flex;
+      gap: 14px;
+      max-width: 85%;
+      animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.4, 1);
+    }
+    .message.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      background: #334155;
+      border: 2px solid #4f46e5;
+    }
+    .bot .avatar { background: #1e293b; border-color: #60a5fa; }
+    .user .avatar { background: #1e293b; border-color: #10b981; }
+
+    .bubble {
+      padding: 16px;
+      border-radius: 20px;
+      line-height: 1.5;
+      position: relative;
+      word-break: break-word;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .bot .bubble {
+      background: linear-gradient(to right, #1e293b, #334155);
+      color: #e2e8f0;
+    }
+    .user .bubble {
+      background: linear-gradient(to right, #065f46, #0d9488);
+      color: #f0fdf4;
+    }
+
+    .metadata {
+      font-size: 0.75rem;
+      margin-top: 6px;
+      opacity: 0.8;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 12px 16px;
+      background: #1e293b;
+      border-radius: 20px;
+      width: fit-content;
+      opacity: 0.9;
+    }
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: #94a3b8;
+      border-radius: 50%;
+      animation: bounce 1.5s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .input-area {
+      display: flex;
+      gap: 12px;
+      padding: 20px 0;
+    }
+    #userInput {
+      flex: 1;
+      padding: 14px 18px;
+      border: none;
+      border-radius: 16px;
+      background: rgba(30, 41, 59, 0.8);
+      color: white;
+      font-size: 1rem;
+      outline: none;
+      resize: none;
+      max-height: 120px;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+    }
+    #userInput::placeholder {
+      color: #94a3b8;
+    }
+    #sendBtn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #sendBtn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.6);
+    }
+
+    .privacy-badge {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: auto;
+      padding: 12px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    @media (max-width: 650px) {
+      .message { max-width: 95%; }
+      .input-area { flex-direction: column; }
+      #sendBtn { width: 100%; height: 50px; border-radius: 14px; }
+      header h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-elements" id="bgElements"></div>
+
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-shield-alt"></i> Safe Sport Advisor</h1>
+      <p>Your private AI coach for sports, health & recovery</p>
+    </header>
+
+    <div class="chat-box" id="chatBox">
+      <div class="message bot">
+        <div class="avatar">🤖</div>
+        <div class="bubble">
+          Hello! I’m your Safe Sport Advisor. Ask me about training plans, heart rate zones, injury recovery, or nutrition — I’ll help while keeping your data 100% private.
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <textarea 
+        id="userInput" 
+        placeholder="Try: 'My resting HR is 52 bpm and I'm 24 years old...'" 
+        rows="2"></textarea>
+      <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+    </div>
+
+    <div class="privacy-badge">
+      <i class="fas fa-lock"></i> No sensitive data leakage • Hybrid LLM architecture • Secure and auditable storage
+    </div>
+  </div>
+
+  <script>
+    // Generate animated background dots
+    const bg = document.getElementById('bgElements');
+    for (let i = 0; i < 15; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot';
+      dot.style.width = `${Math.random() * 20 + 5}px`;
+      dot.style.height = dot.style.width;
+      dot.style.left = `${Math.random() * 100}%`;
+      dot.style.top = `${Math.random() * 100}%`;
+      dot.style.animationDelay = `${Math.random() * 5}s`;
+      bg.appendChild(dot);
+    }
+
+    const chatBox = document.getElementById('chatBox');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    function addMessage(text, isUser = false, metadata = null) {
+      const msg = document.createElement('div');
+      msg.className = `message ${isUser ? 'user' : 'bot'}`;
+      
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar';
+      avatar.textContent = isUser ? '👤' : '🤖';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+
+      // Add metadata badge for bot messages
+      if (!isUser && metadata) {
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'metadata';
+        if (metadata.routed_to === 'local') {
+          metaDiv.innerHTML = '<i class="fas fa-microchip"></i> Answered locally • Private';
+        } else {
+          metaDiv.innerHTML = '<i class="fas fa-cloud"></i> Processed externally • Anonymized';
+        }
+        bubble.appendChild(metaDiv);
+      }
+
+      msg.appendChild(avatar);
+      msg.appendChild(bubble);
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function showTyping() {
+      const typing = document.createElement('div');
+      typing.className = 'typing-indicator';
+      typing.id = 'typingIndicator';
+      typing.innerHTML = `
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      `;
+      chatBox.appendChild(typing);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function hideTyping() {
+      const indicator = document.getElementById('typingIndicator');
+      if (indicator) indicator.remove();
+    }
+
+    async function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      addMessage(text, true);
+      userInput.value = '';
+      userInput.disabled = true;
+      sendBtn.disabled = true;
+      showTyping();
+
+      try {
+        const response = await fetch('http://localhost:3000/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ message: text })
+        });
+
+        hideTyping();
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Failed to get response');
+        }
+
+        const data = await response.json();
+        addMessage(data.reply, false, {
+          routed_to: data.routed_to,
+          anonymized: data.anonymized
+        });
+
+      } catch (err) {
+        hideTyping();
+        addMessage(`⚠️ ${err.message || 'Could not reach the advisor. Is the server running?'}`, false);
+      } finally {
+        userInput.disabled = false;
+        sendBtn.disabled = false;
+        userInput.focus();
+      }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    userInput.focus();
+  </script>
+</body>
+</html>
